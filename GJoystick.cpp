@@ -105,17 +105,23 @@ void GJoystick::checkCurrentJoystickPosition(unsigned long timeNow) {
     
     if (nunchuk_zbutton() == HIGH)
     {
+      if (zStepper.getFeedMode() == AUTO_FEED_MODE && zStepper.getFeedAutoMode() == AUTO_FEED_MODE_ASYNC) 
+      {
        zStepper.quickAutoSpeed();
        zStepper.setSpeedAsLong(zStepper.getAutoSpeed() * 100L);
        display.displayAutoFeedSpeed(zStepper.getAutoSpeed());
        //Serial.println("nunchuk_zbutton() == HIGH");
+      }
     }
     else
     {
+      if (zStepper.getFeedMode() == AUTO_FEED_MODE && zStepper.getFeedAutoMode() == AUTO_FEED_MODE_ASYNC) 
+      {
        zStepper.backToNormalAutoSpeed();
        zStepper.setSpeedAsLong(zStepper.getAutoSpeed() * 100L);
        display.displayAutoFeedSpeed(zStepper.getAutoSpeed());
        //Serial.println("nunchuk_zbutton() == LOW");
+      }
     }
     
     if (nunchuk_cbutton() == HIGH)

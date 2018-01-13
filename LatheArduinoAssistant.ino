@@ -1,11 +1,11 @@
 
-#include "sources/Config.h"
-#include "sources/GDisplay.h"
-#include "sources/GSpindle.h"
-#include "sources/GStepper.h"
-#include "sources/GHandWheel.h"
-#include "sources/GJoystick.h"
-#include "sources/GMenu.h"
+#include "Config.h"
+#include "GDisplay.h"
+#include "GSpindle.h"
+#include "GStepper.h"
+#include "GHandWheel.h"
+#include "GJoystick.h"
+#include "GMenu.h"
 
 /*********************************************************
    Common variables
