@@ -27,7 +27,7 @@ class GStepper
     virtual void    enable();
     void    moveTo(long absolute);
     //void    setSpeed(double speed, char dir);
-    void    setSpeedAsLong(unsigned long speed);
+    void    setSpeed(float speed);
     long    moveToWithHandWheel(long handWheelPosition);
     void    run();
     void    runSpeed();
@@ -53,8 +53,8 @@ class GStepper
     void backToNormalAutoSpeed();
     void increaseAutoSyncSpeed();
     void decreaseAutoSyncSpeed();
-    unsigned int getAutoSpeed();
-    unsigned int getAutoSyncSpeed();
+    float getAutoSpeed();
+    float getAutoSyncSpeed();
     byte getFeedMode();
     void setFeedMode(byte feedMode);
     byte getFeedAutoMode();
@@ -86,7 +86,7 @@ class GStepper
     float _handwheelFactor;
 
     //for speed mode
-    volatile unsigned long _speed;
+    volatile float _speed;
 
     //for stops
     volatile long _leftEndStop; // Steps
@@ -95,14 +95,14 @@ class GStepper
     // a variable for the selected auto feed sync speed: mm / one revolution of spindle: 0.08; 0.12; 0.16;
     int _autoSyncSpeedCount = 0;
     //ATTENTION! The values are multiplayed by 100 for better precision and quick calclations
-    const unsigned int _zAutoFeedSyncSpeeds[NUM_AUTO_SPEEDS_SYNC] = {8, 12, 16, 30, 40, 50, 60, 70, 75, 80, 100, 125, 150, 175, 200, 250, 300};
+    const float _zAutoFeedSyncSpeeds[NUM_AUTO_SPEEDS_SYNC] = {0.08, 0.12, 0.16, 0.30, 0.40, 0.50, 0.60, 0.70, 0.75, 0.80, 1.00, 1.25, 1.50, 1.75, 2.00, 2.50, 3.00};
 
     //a variable for the selected auto feed speed: mm / second
     int _autoSpeedCount = 0;
     int _oldAutoSpeedCount = 0;
     boolean _isQuickAutoSpeed = false;
     //ATTENTION! The values are multiplayed by 100 for better precision and quick calclations
-    const unsigned int _zAutoFeedSpeeds[NUM_AUTO_SPEEDS] = {50, 100, 200, 600};
+    const float _zAutoFeedSpeeds[NUM_AUTO_SPEEDS] = {0.05, 0.10, 2.00, 6.00};
 
     // a variable for mini lathe feed mode: 0 - manually feed; 1 - auto feed;
     volatile byte _feedMode;

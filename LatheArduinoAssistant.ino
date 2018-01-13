@@ -55,7 +55,8 @@ void callbackSpindle()
   spindle.callbackSpindleUpdate();
   if (zStepper.getFeedMode() == AUTO_FEED_MODE && zStepper.getFeedAutoMode() == AUTO_FEED_MODE_THREAD && spindle.isReady() )
   {
-    zStepper.setSpeedAsLong(spindle.calculateMMPerSpindleRevolutionPerSecond(zStepper.getAutoSyncSpeed()));
+    //Serial.println(spindle.calculateMMPerSpindleRevolutionPerSecond(zStepper.getAutoSyncSpeed()));
+    zStepper.setSpeed(spindle.calculateMMPerSpindleRevolutionPerSecond(zStepper.getAutoSyncSpeed()));
   }
 }
 

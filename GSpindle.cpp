@@ -15,40 +15,33 @@ GSpindle::GSpindle(int pin)
 void GSpindle::callbackSpindleUpdate()
 {
   _spindleDeltaPhase = micros() - _spindleUpdateTimePhase;
+  Serial.println(_spindleDeltaPhase);
   _spindleUpdateTimePhase = micros();
-  if (!_firstRevilution) {
+  if (isReady()) {
     _spindleRevolutionsPerSecond = calculateSpindleRevolutionsPerSecond();
+    //Serial.println(_spindleRevolutionsPerSecond);
   }
 
-  if (_spindlePhaseCounter == 0)
-  {
-    _spindlePhaseCounter = 1;
-  }
-  else if (_spindlePhaseCounter == 1)
-  {
-    _spindlePhaseCounter = 0;
-    _firstRevilution = false;
-  }
+  _firstRevilution = false;
 }
 
 /*
-   ATTENTION! multiplay 100 for precision: 1000000 * 100 / spindleDeltaPhase
+
 */
-unsigned int GSpindle::calculateSpindleRevolutionsPerSecond()
+float GSpindle::calculateSpindleRevolutionsPerSecond()
 {
   if (!_firstRevilution && _spindleUpdateTimePhase != 0)
   {
-    return 100000000 / _spindleDeltaPhase; // multiplay 100 for precision 1000000 * 100 / spindleDeltaPhase
+    return  1000000.0 / _spindleDeltaPhase;
   }
   else
     return 0;
 }
 
 /*
-    ATTENTION! Return value is reather on 10000 as it should be:
-    spindleRevolutionsPerSecond and zAutoFeedSyncSpeeds are already multiplayed by 100 for better precision.
+   
 */
-unsigned int GSpindle::calculateMMPerSpindleRevolutionPerSecond(int zAutoFeedSyncSpeed)
+float GSpindle::calculateMMPerSpindleRevolutionPerSecond(int zAutoFeedSyncSpeed)
 {
   return _spindleRevolutionsPerSecond * zAutoFeedSyncSpeed;
 }
@@ -56,9 +49,9 @@ unsigned int GSpindle::calculateMMPerSpindleRevolutionPerSecond(int zAutoFeedSyn
 /*
    return integer value for the spindle speed: revolutions per minute
 */
-unsigned int GSpindle::calculateSpindleRevolutionsPerMinute()
+float GSpindle::calculateSpindleRevolutionsPerMinute()
 {
-  return _spindleRevolutionsPerSecond * 60 / 100;
+  return _spindleRevolutionsPerSecond * 60.0;
 }
 
 boolean GSpindle::isReady()

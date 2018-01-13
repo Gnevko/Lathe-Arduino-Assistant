@@ -189,9 +189,9 @@ void GStepper::makeStep()
 
 /**
    speed - mm per second;
-   ATTENTION! speed must be bigger on 10000 from original value!
+   ATTENTION! speed must be bigger on 100 from original value!
 */
-void GStepper::setSpeedAsLong(unsigned long speed)
+void GStepper::setSpeed(float speed)
 {
   if (_speed != speed)
   {
@@ -208,12 +208,12 @@ void GStepper::setSpeedAsLong(unsigned long speed)
 
     if (_speed > 0)
     {
-      _deltaTimeForNextStep = 1000000 / (speed * 100 / 625);
+      _deltaTimeForNextStep = 1000000.0 / (_speed / MM_PER_Z_STEP);
       //Serial.println(1000000.0 / (_speed / MM_PER_Z_STEP));
       //Serial.println( (long)(1000000.0 / (_speed / MM_PER_Z_STEP)));
       //Serial.println(speed );
       //Serial.println((speed * 100) / 625);
-      //Serial.println(_deltaTimeForNextStep);
+      Serial.println(_deltaTimeForNextStep);
     }
   }
 }
@@ -369,12 +369,12 @@ void GStepper::decreaseAutoSyncSpeed()
   }
 }
 
-unsigned int GStepper::getAutoSpeed()
+float GStepper::getAutoSpeed()
 {
   return _zAutoFeedSpeeds[_autoSpeedCount];
 }
 
-unsigned int GStepper::getAutoSyncSpeed()
+float GStepper::getAutoSyncSpeed()
 {
   return _zAutoFeedSyncSpeeds[_autoSyncSpeedCount];
 }

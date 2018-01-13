@@ -15,20 +15,20 @@ class GSpindle
   public:
     GSpindle(int pin);
     void callbackSpindleUpdate();
-    unsigned int calculateSpindleRevolutionsPerMinute();
+    float calculateSpindleRevolutionsPerMinute();
     boolean isReady();
     void reset();
-    unsigned int calculateMMPerSpindleRevolutionPerSecond(int zAutoFeedSyncSpeed);
+    float calculateMMPerSpindleRevolutionPerSecond(int zAutoFeedSyncSpeed);
 
   protected:
-    unsigned int calculateSpindleRevolutionsPerSecond();
+    float calculateSpindleRevolutionsPerSecond();
     
   private:
     volatile unsigned long _spindleUpdateTimePhase;
     volatile unsigned long _spindleDeltaPhase;
     volatile boolean _firstRevilution;
     volatile byte _spindlePhaseCounter;
-    volatile unsigned int _spindleRevolutionsPerSecond;
+    volatile float _spindleRevolutionsPerSecond;
 };
 
 #endif //GSPINDLE_H

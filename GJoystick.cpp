@@ -30,7 +30,7 @@ void GJoystick::checkCurrentJoystickPosition(unsigned long timeNow) {
         zStepper.setDirection(DIRECTION_LEFT);
         if (zStepper.getFeedAutoMode() == AUTO_FEED_MODE_ASYNC) //async
         {
-          zStepper.setSpeedAsLong(zStepper.getAutoSpeed() * 100L);
+          zStepper.setSpeed(zStepper.getAutoSpeed());
         }
         else
         {
@@ -51,7 +51,7 @@ void GJoystick::checkCurrentJoystickPosition(unsigned long timeNow) {
         zStepper.setDirection(DIRECTION_RIGHT);
         if (zStepper.getFeedAutoMode() == AUTO_FEED_MODE_ASYNC) //async
         {
-          zStepper.setSpeedAsLong(zStepper.getAutoSpeed() * 100L);
+          zStepper.setSpeed(zStepper.getAutoSpeed());
         }
         else
         {
@@ -108,7 +108,7 @@ void GJoystick::checkCurrentJoystickPosition(unsigned long timeNow) {
       if (zStepper.getFeedMode() == AUTO_FEED_MODE && zStepper.getFeedAutoMode() == AUTO_FEED_MODE_ASYNC) 
       {
        zStepper.quickAutoSpeed();
-       zStepper.setSpeedAsLong(zStepper.getAutoSpeed() * 100L);
+       zStepper.setSpeed(zStepper.getAutoSpeed());
        display.displayAutoFeedSpeed(zStepper.getAutoSpeed());
        //Serial.println("nunchuk_zbutton() == HIGH");
       }
@@ -118,7 +118,7 @@ void GJoystick::checkCurrentJoystickPosition(unsigned long timeNow) {
       if (zStepper.getFeedMode() == AUTO_FEED_MODE && zStepper.getFeedAutoMode() == AUTO_FEED_MODE_ASYNC) 
       {
        zStepper.backToNormalAutoSpeed();
-       zStepper.setSpeedAsLong(zStepper.getAutoSpeed() * 100L);
+       zStepper.setSpeed(zStepper.getAutoSpeed());
        display.displayAutoFeedSpeed(zStepper.getAutoSpeed());
        //Serial.println("nunchuk_zbutton() == LOW");
       }

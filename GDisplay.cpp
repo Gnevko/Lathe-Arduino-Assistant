@@ -176,11 +176,11 @@ void GDisplay::displayHandWheelFactor(float _handWheelFactor)
    ------>A0.08--------
    --------------------
 */
-void GDisplay::displayAutoFeedSpeed(int _autoSpeed)
+void GDisplay::displayAutoFeedSpeed(float _autoSpeed)
 {
   _lcd->setCursor(8, 2);
   _lcd->print(F("A"));
-  _lcd->print(_autoSpeed / 100.0);
+  _lcd->print(_autoSpeed);
 }
 
 /*
@@ -189,11 +189,11 @@ void GDisplay::displayAutoFeedSpeed(int _autoSpeed)
    ------------>S0.08--
    --------------------
 */
-void GDisplay::displayAutoFeedSyncSpeed(int _autoSyncSpeed)
+void GDisplay::displayAutoFeedSyncSpeed(float _autoSyncSpeed)
 {
   _lcd->setCursor(15, 2);
   _lcd->print(F("S"));
-  _lcd->print(_autoSyncSpeed / 100.0);
+  _lcd->print(_autoSyncSpeed);
 }
 
 /*
