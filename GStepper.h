@@ -18,6 +18,7 @@
 #define DIRECTION_LEFT 1
 #define DIRECTION_RIGHT -1
 
+extern void callbackTimer();
 
 class GStepper
 {
@@ -74,8 +75,6 @@ class GStepper
     void  makeStep();
     boolean isEndStopsSet();
   private:
-    volatile unsigned long _lastStepTime; //microseconds
-    volatile unsigned long _nowTime; //microseconds
     volatile unsigned long _deltaTimeForNextStep;
 
     volatile long           _currentPos;    // Steps

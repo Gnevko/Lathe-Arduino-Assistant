@@ -25,11 +25,10 @@ void GStepper::resetPosition()
 {
   _targetPos = _currentPos;
   _oldHandWheelPosition = distanceInHandWheelUnits(); //_oldHandWheelPosition = 0;
-  _deltaTimeForNextStep = 1000;
-  _speed = 0;
+  _deltaTimeForNextStep = 0;
+  setSpeed(0.0);
   _dir = DIRECTION_LEFT;
   _handWheelSpeed = 0;
-  _lastStepTime = _nowTime = micros();
   _delta = 0;
 }
 
@@ -83,13 +82,81 @@ void GStepper::calculateSpeedForHandWheel(long newHandWheelPosition)
   if (_handWheelSpeed > 0)
   {
     _deltaTimeForNextStep = 1000000 / (_handWheelSpeed / MM_PER_Z_STEP); // steps per second
-    //interrupts();
+    Timer3.attachInterruptFunction(callbackTimer, _deltaTimeForNextStep);
+  }
+  else
+  {
+    Timer3.detachInterrupt();
+    //Serial.println("H");
   }
   _oldHandWheelPosition = newHandWheelPosition;
 }
 
+/**
+   speed - mm per second;
+   ATTENTION! speed must be bigger on 100 from original value!
+*/
+void GStepper::setSpeed(float speed)
+{
+  if (_speed != speed)
+  {
+    _speed = speed;
+
+    if (_dir > 0)
+    {
+      digitalWriteFast(Z_DIR_PIN, HIGH);
+    }
+    else
+    {
+      digitalWriteFast(Z_DIR_PIN, LOW);
+    }
+    //Serial.println(_speed);
+    if (_speed > 0.0)
+    {
+      _deltaTimeForNextStep = 1000000.0 / (_speed / MM_PER_Z_STEP);
+      //Serial.println(1000000.0 / (_speed / MM_PER_Z_STEP));
+      //Serial.println( (long)(1000000.0 / (_speed / MM_PER_Z_STEP)));
+      //Serial.println(speed );
+      //Serial.println((speed * 100) / 625);
+      //Serial.println(_deltaTimeForNextStep);
+      //Timer3.initialize(_deltaTimeForNextStep);
+      Timer3.attachInterruptFunction(callbackTimer, _deltaTimeForNextStep);
+    }
+    else
+    {
+      Timer3.detachInterrupt();
+      //Serial.println("D");
+    }
+  }
+}
+
 void GStepper::run()
 {
+  //Serial.println(_targetPos - _currentPos);
+
+  if (_targetPos == _currentPos)
+    return;
+  //Serial.println(_targetPos);
+
+  if (distanceToGo() > 0)
+  {
+    digitalWriteFast(Z_DIR_PIN, HIGH); // pin 36
+    _currentPos++;
+  }
+  else
+  {
+    digitalWriteFast(Z_DIR_PIN, LOW); // pin 36
+    _currentPos--;
+  }
+
+  makeStep();
+
+  //Serial.println(_currentTimeInterval);
+}
+
+/*
+  void GStepper::run()
+  {
   //Serial.println(_targetPos - _currentPos);
 
   if (_targetPos == _currentPos)
@@ -115,19 +182,40 @@ void GStepper::run()
     _lastStepTime = _nowTime;
   }
   //Serial.println(_currentTimeInterval);
-}
+  }*/
 
 void GStepper::runSpeed()
 {
+  if (_dir > 0)
+  {
+    _currentPos++;
+  }
+  else
+  {
+    _currentPos--;
+  }
+
+  if (isEndStopsSet() && _currentPos > _leftEndStop)
+  {
+    _currentPos = _leftEndStop;
+  }
+  else if (isEndStopsSet() && _currentPos < _rightEndStop)
+  {
+    _currentPos = _rightEndStop;
+  }
+  else
+  {
+    makeStep();
+  }
+}
+
+/*
+  void GStepper::runSpeed()
+  {
   _nowTime = micros();
   if (_nowTime - _lastStepTime >= _deltaTimeForNextStep && _speed != 0)
-  //if (_nowTime - _lastStepTime >= (_deltaTimeForNextStep - _delta) && _speed != 0)
   {
-    //_delta = _nowTime - _lastStepTime - _deltaTimeForNextStep;
-    //if (_delta < 0 || _delta > _deltaTimeForNextStep)
-    //  _delta = 0;
-
-    if (_dir > 0)
+     if (_dir > 0)
     {
       _currentPos++;
     }
@@ -150,44 +238,13 @@ void GStepper::runSpeed()
     }
     _lastStepTime = _nowTime;
   }
-}
+  }*/
 
 void GStepper::makeStep()
 {
   digitalWriteFast(Z_STEP_PIN, HIGH);
   delayMicroseconds(5);
   digitalWriteFast(Z_STEP_PIN, LOW);
-}
-
-/**
-   speed - mm per second;
-   ATTENTION! speed must be bigger on 100 from original value!
-*/
-void GStepper::setSpeed(float speed)
-{
-  if (_speed != speed)
-  {
-    _speed = speed;
-
-    if (_dir > 0)
-    {
-      digitalWriteFast(Z_DIR_PIN, HIGH);
-    }
-    else
-    {
-      digitalWriteFast(Z_DIR_PIN, LOW);
-    }
-
-    if (_speed > 0)
-    {
-      _deltaTimeForNextStep = 1000000.0 / (_speed / MM_PER_Z_STEP);
-      //Serial.println(1000000.0 / (_speed / MM_PER_Z_STEP));
-      //Serial.println( (long)(1000000.0 / (_speed / MM_PER_Z_STEP)));
-      //Serial.println(speed );
-      //Serial.println((speed * 100) / 625);
-      //Serial.println(_deltaTimeForNextStep);
-    }
-  }
 }
 
 void GStepper::setPositionToNull()
