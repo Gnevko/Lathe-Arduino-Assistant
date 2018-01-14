@@ -32,6 +32,7 @@ class GStepper
     void    run();
     void    runSpeed();
     long distanceToGo();
+    volatile long getCurrentPosition();
     float distanceInMM();
     long distanceInHandWheelUnits();
     void resetPosition();

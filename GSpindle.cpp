@@ -15,7 +15,7 @@ GSpindle::GSpindle(int pin)
 void GSpindle::callbackSpindleUpdate()
 {
   _spindleDeltaPhase = micros() - _spindleUpdateTimePhase;
-  Serial.println(_spindleDeltaPhase);
+  //Serial.println(_spindleDeltaPhase);
   _spindleUpdateTimePhase = micros();
   if (isReady()) {
     _spindleRevolutionsPerSecond = calculateSpindleRevolutionsPerSecond();
@@ -41,7 +41,7 @@ float GSpindle::calculateSpindleRevolutionsPerSecond()
 /*
    
 */
-float GSpindle::calculateMMPerSpindleRevolutionPerSecond(int zAutoFeedSyncSpeed)
+float GSpindle::calculateMMPerSpindleRevolutionPerSecond(float zAutoFeedSyncSpeed)
 {
   return _spindleRevolutionsPerSecond * zAutoFeedSyncSpeed;
 }

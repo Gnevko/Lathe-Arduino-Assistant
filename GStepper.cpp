@@ -120,11 +120,12 @@ void GStepper::run()
 void GStepper::runSpeed()
 {
   _nowTime = micros();
-  if (_nowTime - _lastStepTime >= (_deltaTimeForNextStep - _delta) && _speed != 0)
+  if (_nowTime - _lastStepTime >= _deltaTimeForNextStep && _speed != 0)
+  //if (_nowTime - _lastStepTime >= (_deltaTimeForNextStep - _delta) && _speed != 0)
   {
-    _delta = _nowTime - _lastStepTime - _deltaTimeForNextStep;
-    if (_delta < 0 || _delta > _deltaTimeForNextStep)
-      _delta = 0;
+    //_delta = _nowTime - _lastStepTime - _deltaTimeForNextStep;
+    //if (_delta < 0 || _delta > _deltaTimeForNextStep)
+    //  _delta = 0;
 
     if (_dir > 0)
     {
@@ -160,35 +161,6 @@ void GStepper::makeStep()
 
 /**
    speed - mm per second;
-*/
-/*void GStepper::setSpeed(double speed, char dir)
-  {
-  if (_speed != speed || _dir != dir)
-  {
-    _speed = speed;
-    _dir = dir;
-
-    if (_dir > 0)
-    {
-      digitalWriteFast(Z_DIR_PIN, HIGH);
-    }
-    else
-    {
-      digitalWriteFast(Z_DIR_PIN, LOW);
-    }
-
-    if (_speed > 0)
-    {
-      _deltaTimeForNextStep = 1000000.0 / (speed / MM_PER_Z_STEP);
-      //Serial.println(1000000.0 / (_speed / MM_PER_Z_STEP));
-      //Serial.println( (long)(1000000.0 / (_speed / MM_PER_Z_STEP)));
-      //Serial.println(_deltaTimeForNextStep*100);
-    }
-  }
-  }*/
-
-/**
-   speed - mm per second;
    ATTENTION! speed must be bigger on 100 from original value!
 */
 void GStepper::setSpeed(float speed)
@@ -213,7 +185,7 @@ void GStepper::setSpeed(float speed)
       //Serial.println( (long)(1000000.0 / (_speed / MM_PER_Z_STEP)));
       //Serial.println(speed );
       //Serial.println((speed * 100) / 625);
-      Serial.println(_deltaTimeForNextStep);
+      //Serial.println(_deltaTimeForNextStep);
     }
   }
 }
@@ -258,6 +230,11 @@ float GStepper::distanceInMM()
 long GStepper::distanceInHandWheelUnits()
 {
   return (_currentPos * MM_PER_Z_STEP_HANDWHEEL) / _handwheelFactor;
+}
+
+volatile long GStepper::getCurrentPosition()
+{
+  return _currentPos;
 }
 
 void GStepper::setLeftEndStopInSteps(long leftStopInSteps)

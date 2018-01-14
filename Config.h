@@ -57,9 +57,20 @@
 #define Z_DIR_PIN 27
 #define Z_ENABLE_PIN 31
 
-#define MM_PER_Z_STEP 0.000625 //2mm / 3200 steps;
-#define MM_PER_Z_STEP_HANDWHEEL 0.0025 //(2mm / 3200 steps) / 4 'ticks';
+//#define MM_PER_Z_STEP 0.000625 //2mm / 3200 steps;
+//#define MM_PER_Z_STEP_HANDWHEEL 0.0025 //(2mm / 3200 steps) * 4 'ticks';
 
+//1600 micro steps
+//#define MM_PER_Z_STEP 0.00125 //2mm / 1600 steps;
+//#define MM_PER_Z_STEP_HANDWHEEL 0.005 //(2mm / 1600 steps) * 4 'ticks';
+
+//800 steps
+#define MM_PER_Z_STEP 0.0025 //2mm / 800 steps;
+#define MM_PER_Z_STEP_HANDWHEEL 0.01 //(2mm / 800 steps) * 4 'ticks';
+
+//200 steps
+//#define MM_PER_Z_STEP 0.01 //2mm / 200 steps;
+//#define MM_PER_Z_STEP_HANDWHEEL 0.04 //(2mm / 200 steps) * 4 'ticks';
 /*********************************************************
    Speeds
  *********************************************************/

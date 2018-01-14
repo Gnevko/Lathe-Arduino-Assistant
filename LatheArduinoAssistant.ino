@@ -37,8 +37,8 @@ void setup() {
 
   attachInterrupt(0, callbackSpindle, RISING); //PIN2
 
-  Timer3.initialize(20);
-  Timer3.attachInterruptFunction(callbackTimer, 20);  // attaches callback() as a timer overflow interrupt
+  //Timer3.initialize(20);
+  //Timer3.attachInterruptFunction(callbackTimer, 20);  // attaches callback() as a timer overflow interrupt
 
   menuEncoderButton.attachClick(callbackMenuClick);
   menuEncoderButton.attachDoubleClick(callbackMenuDoubleClick);
@@ -50,9 +50,14 @@ void setup() {
   lcd.clear();
 }
 
+volatile long oldPosition = 0;
+
 void callbackSpindle()
-{
-  spindle.callbackSpindleUpdate();
+{ 
+  //spindle.callbackSpindleUpdate();
+  //Serial.println(zStepper.getCurrentPosition() - oldPosition);
+  oldPosition = zStepper.getCurrentPosition();
+  
   if (zStepper.getFeedMode() == AUTO_FEED_MODE && zStepper.getFeedAutoMode() == AUTO_FEED_MODE_THREAD && spindle.isReady() )
   {
     //Serial.println(spindle.calculateMMPerSpindleRevolutionPerSecond(zStepper.getAutoSyncSpeed()));

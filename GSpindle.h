@@ -18,7 +18,7 @@ class GSpindle
     float calculateSpindleRevolutionsPerMinute();
     boolean isReady();
     void reset();
-    float calculateMMPerSpindleRevolutionPerSecond(int zAutoFeedSyncSpeed);
+    float calculateMMPerSpindleRevolutionPerSecond(float zAutoFeedSyncSpeed);
 
   protected:
     float calculateSpindleRevolutionsPerSecond();
