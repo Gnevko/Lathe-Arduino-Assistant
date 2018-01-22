@@ -82,11 +82,16 @@ void GStepper::calculateSpeedForHandWheel(long newHandWheelPosition)
   if (_handWheelSpeed > 0)
   {
     _deltaTimeForNextStep = 1000000 / (_handWheelSpeed / MM_PER_Z_STEP); // steps per second
+    noInterrupts();
+    Timer3.detachInterrupt();
     Timer3.attachInterruptFunction(callbackTimer, _deltaTimeForNextStep);
+    interrupts();
   }
   else
   {
+    noInterrupts();
     Timer3.detachInterrupt();
+    interrupts();
     //Serial.println("H");
   }
   _oldHandWheelPosition = newHandWheelPosition;
@@ -120,11 +125,16 @@ void GStepper::setSpeed(float speed)
       //Serial.println((speed * 100) / 625);
       //Serial.println(_deltaTimeForNextStep);
       //Timer3.initialize(_deltaTimeForNextStep);
+      noInterrupts();
+      Timer3.detachInterrupt();
       Timer3.attachInterruptFunction(callbackTimer, _deltaTimeForNextStep);
+      interrupts();
     }
     else
     {
+      noInterrupts();
       Timer3.detachInterrupt();
+      interrupts();
       //Serial.println("D");
     }
   }
@@ -365,7 +375,7 @@ void GStepper::decreaseAutoSpeed()
   _oldAutoSpeedCount = _autoSpeedCount;
 }
 
-void GStepper::quickAutoSpeed()
+void GStepper::setQuickAutoSpeed()
 {
   if (!_isQuickAutoSpeed)
   {
@@ -385,6 +395,12 @@ void GStepper::backToNormalAutoSpeed()
     _isQuickAutoSpeed = false;
   }
 }
+
+boolean GStepper::getIsQuickAutoSpeed()
+{
+  return _isQuickAutoSpeed;
+}
+
 
 void GStepper::increaseAutoSyncSpeed()
 {

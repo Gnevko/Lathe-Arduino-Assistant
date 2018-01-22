@@ -51,8 +51,9 @@ class GStepper
 
     void increaseAutoSpeed();
     void decreaseAutoSpeed();
-    void quickAutoSpeed();
+    void setQuickAutoSpeed();
     void backToNormalAutoSpeed();
+    boolean getIsQuickAutoSpeed();
     void increaseAutoSyncSpeed();
     void decreaseAutoSyncSpeed();
     float getAutoSpeed();

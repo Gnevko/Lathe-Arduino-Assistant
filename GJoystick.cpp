@@ -13,7 +13,7 @@ GJoystick::GJoystick()
 
 */
 void GJoystick::checkCurrentJoystickPosition(unsigned long timeNow) {
-  
+
   if (timeNow - _lastJoysticChanges > JOYSTICK_REACTION_TIME)
   {
     int _nunchuk_cjoy_x = nunchuk_cjoy_x();
@@ -102,28 +102,40 @@ void GJoystick::checkCurrentJoystickPosition(unsigned long timeNow) {
     {
 
     }
-    
+
     if (nunchuk_zbutton() == HIGH)
     {
-      if (zStepper.getFeedMode() == AUTO_FEED_MODE && zStepper.getFeedAutoMode() == AUTO_FEED_MODE_ASYNC) 
+      if (zStepper.getFeedMode() == AUTO_FEED_MODE && zStepper.getFeedAutoMode() == AUTO_FEED_MODE_ASYNC)
       {
-       zStepper.quickAutoSpeed();
-       zStepper.setSpeed(zStepper.getAutoSpeed());
-       display.displayAutoFeedSpeed(zStepper.getAutoSpeed());
-       //Serial.println("nunchuk_zbutton() == HIGH");
+        if (!zStepper.getIsQuickAutoSpeed())
+        {
+          //noInterrupts();
+          //Serial.println("nunchuk_zbutton() == HIGH");
+          //zStepper.resetPosition();
+          zStepper.setQuickAutoSpeed();
+          zStepper.setSpeed(zStepper.getAutoSpeed());
+          display.displayAutoFeedSpeed(zStepper.getAutoSpeed());
+          //interrupts();
+        }
       }
     }
     else
     {
-      if (zStepper.getFeedMode() == AUTO_FEED_MODE && zStepper.getFeedAutoMode() == AUTO_FEED_MODE_ASYNC) 
+      if (zStepper.getFeedMode() == AUTO_FEED_MODE && zStepper.getFeedAutoMode() == AUTO_FEED_MODE_ASYNC)
       {
-       zStepper.backToNormalAutoSpeed();
-       zStepper.setSpeed(zStepper.getAutoSpeed());
-       display.displayAutoFeedSpeed(zStepper.getAutoSpeed());
-       //Serial.println("nunchuk_zbutton() == LOW");
+        if (zStepper.getIsQuickAutoSpeed())
+        {
+          //noInterrupts();
+          //Serial.println("nunchuk_zbutton() == LOW");
+          //zStepper.resetPosition();
+          zStepper.backToNormalAutoSpeed();
+          zStepper.setSpeed(zStepper.getAutoSpeed());
+          display.displayAutoFeedSpeed(zStepper.getAutoSpeed());
+          //interrupts();
+        }
       }
     }
-    
+
     if (nunchuk_cbutton() == HIGH)
     {
       noInterrupts();
@@ -157,7 +169,7 @@ void GJoystick::initJoystick()
   digitalWrite(JOYSTICK_Z_BACKWARD_PIN, HIGH);
   digitalWrite(JOYSTICK_X_FORWARD_PIN, HIGH);
   digitalWrite(JOYSTICK_X_BACKWARD_PIN, HIGH);
-  
+
   delay(100);
 
   nunchuk_init();
@@ -167,7 +179,7 @@ void GJoystick::initJoystick()
   // Daten (6 Byte) vom Nunchuk Controller auslesen
   nunchuk_get_data();
   delay(200);
-  
+
   checkCurrentJoystickPosition(millis());
 
   if (_joystickPosition != 0)
