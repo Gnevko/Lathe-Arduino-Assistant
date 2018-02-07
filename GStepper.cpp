@@ -9,7 +9,8 @@ GStepper::GStepper()
   _handWheelSpeed = 0;
 
   setPositionToNull();
-  setEndStopsToZero();
+  disableLeftEndStop();
+  disableRightEndStop();
   resetPosition();
 
   pinMode(Z_STEP_PIN, OUTPUT);
@@ -53,12 +54,12 @@ long GStepper::moveToWithHandWheel(long newHandWheelPosition)
   long fStepsToGo = (newHandWheelPosition * _handwheelFactor) / MM_PER_Z_STEP_HANDWHEEL;
   //Serial.println(fStepsToGo);
 
-  if (isEndStopsSet() && fStepsToGo > _leftEndStop)
+  if (isLeftEndStopSet() && fStepsToGo > _leftEndStop)
   {
     _handWheelSpeed = 0.0;
     return -1;
   }
-  else if (isEndStopsSet() && fStepsToGo < _rightEndStop)
+  else if (isRightEndStopSet() && fStepsToGo < _rightEndStop)
   {
     _handWheelSpeed = 0.0;
     return -1;
@@ -160,39 +161,8 @@ void GStepper::run()
   }
 
   makeStep();
-
   //Serial.println(_currentTimeInterval);
 }
-
-/*
-  void GStepper::run()
-  {
-  //Serial.println(_targetPos - _currentPos);
-
-  if (_targetPos == _currentPos)
-    return;
-  //Serial.println(_targetPos);
-
-  _nowTime = micros();
-  if (_nowTime - _lastStepTime >= _deltaTimeForNextStep)
-  {
-    if (distanceToGo() > 0)
-    {
-      digitalWriteFast(Z_DIR_PIN, HIGH); // pin 36
-      _currentPos++;
-    }
-    else
-    {
-      digitalWriteFast(Z_DIR_PIN, LOW); // pin 36
-      _currentPos--;
-    }
-
-    makeStep();
-
-    _lastStepTime = _nowTime;
-  }
-  //Serial.println(_currentTimeInterval);
-  }*/
 
 void GStepper::runSpeed()
 {
@@ -205,11 +175,11 @@ void GStepper::runSpeed()
     _currentPos--;
   }
 
-  if (isEndStopsSet() && _currentPos > _leftEndStop)
+  if (isLeftEndStopSet() && _currentPos > _leftEndStop)
   {
     _currentPos = _leftEndStop;
   }
-  else if (isEndStopsSet() && _currentPos < _rightEndStop)
+  else if (isRightEndStopSet() && _currentPos < _rightEndStop)
   {
     _currentPos = _rightEndStop;
   }
@@ -307,16 +277,28 @@ volatile long GStepper::getCurrentPosition()
 void GStepper::setLeftEndStopInSteps(long leftStopInSteps)
 {
   _leftEndStop =  leftStopInSteps;
+  _isLeftEndStopSet = true;
 }
 
 void GStepper::setRightEndStopInSteps(long rightStopInSteps)
 {
   _rightEndStop = rightStopInSteps;
+  _isRightEndStopSet = true;
 }
 
 long GStepper::getLeftEndStopInSteps()
 {
   return _leftEndStop;
+}
+
+boolean GStepper::isRightEndStopSet()
+{
+  return _isRightEndStopSet;
+}
+
+boolean GStepper::isLeftEndStopSet()
+{
+  return _isLeftEndStopSet;
 }
 
 float GStepper::getLeftEndStopInMM()
@@ -334,9 +316,15 @@ long GStepper::getRightEndStopInSteps()
   return _rightEndStop;
 }
 
-void GStepper::setEndStopsToZero()
+void GStepper::disableLeftEndStop()
 {
+  _isLeftEndStopSet = false;
   _leftEndStop = 0L;
+}
+
+void GStepper::disableRightEndStop()
+{
+  _isRightEndStopSet = false;
   _rightEndStop = 0L;
 }
 
@@ -348,11 +336,6 @@ void GStepper::setCurrentPositionToLeftEndStop()
 void GStepper::setCurrentPositionToRightEndStop()
 {
   _rightEndStop = _currentPos;
-}
-
-boolean GStepper::isEndStopsSet()
-{
-  return (_leftEndStop != 0 || _rightEndStop != 0);
 }
 
 void GStepper::increaseAutoSpeed()
@@ -401,21 +384,47 @@ boolean GStepper::getIsQuickAutoSpeed()
   return _isQuickAutoSpeed;
 }
 
-
-void GStepper::increaseAutoSyncSpeed()
+void GStepper::setQuickSyncSpeed()
 {
-  _autoSyncSpeedCount ++;
-  if (_autoSyncSpeedCount >= NUM_AUTO_SPEEDS_SYNC)
-    _autoSyncSpeedCount = 0;
-
+  if (!_isQuickSyncSpeed)
+  {
+    _oldSyncSpeedCount = _syncSpeedCount;
+    _syncSpeedCount = QUICK_SYNC_SPEED_POSITION;
+    _isQuickSyncSpeed = true;
+  }
+  //Serial.println(_oldAutoSpeedCount);
+  //Serial.println(_autoSpeedCount);
 }
 
-void GStepper::decreaseAutoSyncSpeed()
+void GStepper::backToNormalSyncSpeed()
 {
-  _autoSyncSpeedCount --;
-  if (_autoSyncSpeedCount < 0)
+  if (_isQuickSyncSpeed)
   {
-    _autoSyncSpeedCount = NUM_AUTO_SPEEDS_SYNC - 1;
+    _syncSpeedCount = _oldSyncSpeedCount;
+    _isQuickSyncSpeed = false;
+  }
+}
+
+boolean GStepper::getIsQuickSyncSpeed()
+{
+  return _isQuickSyncSpeed;
+}
+
+void GStepper::increaseSyncSpeed()
+{
+  _syncSpeedCount ++;
+  if (_syncSpeedCount >= NUM_SYNC_SPEEDS)
+  {
+    _syncSpeedCount = 0;
+  }
+}
+
+void GStepper::decreaseSyncSpeed()
+{
+  _syncSpeedCount --;
+  if (_syncSpeedCount < 0)
+  {
+    _syncSpeedCount = NUM_SYNC_SPEEDS - 1;
   }
 }
 
@@ -424,9 +433,9 @@ float GStepper::getAutoSpeed()
   return _zAutoFeedSpeeds[_autoSpeedCount];
 }
 
-float GStepper::getAutoSyncSpeed()
+float GStepper::getSyncSpeed()
 {
-  return _zAutoFeedSyncSpeeds[_autoSyncSpeedCount];
+  return _zSyncSpeeds[_syncSpeedCount];
 }
 
 byte GStepper::getFeedMode()

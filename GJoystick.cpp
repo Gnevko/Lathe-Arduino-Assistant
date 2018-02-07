@@ -91,10 +91,10 @@ void GJoystick::checkCurrentJoystickPosition(unsigned long timeNow) {
         zStepper.enable();
         display.displayMode(zStepper.getFeedMode(), zStepper.getFeedAutoMode(), zStepper.getDirection());
         display.displayHandWheelFactor(zHandWheel.getSpeed());
-        display.displayAutoFeedSpeed(zStepper.getAutoSpeed());
-        display.displayAutoFeedSyncSpeed(zStepper.getAutoSyncSpeed());
-        display.displayLeftEndStop(zStepper.getLeftEndStopInMM());
-        display.displayRightEndStop(zStepper.getRightEndStopInMM());
+        display.displayAutoSpeed(zStepper.getAutoSpeed());
+        display.displaySyncSpeed(zStepper.getSyncSpeed());
+        display.displayLeftEndStop(zStepper.getLeftEndStopInMM(), zStepper.isLeftEndStopSet());
+        display.displayRightEndStop(zStepper.getRightEndStopInMM(), zStepper.isRightEndStopSet());
       }
     }
 
@@ -114,8 +114,16 @@ void GJoystick::checkCurrentJoystickPosition(unsigned long timeNow) {
           //zStepper.resetPosition();
           zStepper.setQuickAutoSpeed();
           zStepper.setSpeed(zStepper.getAutoSpeed());
-          display.displayAutoFeedSpeed(zStepper.getAutoSpeed());
+          display.displayAutoSpeed(zStepper.getAutoSpeed());
           //interrupts();
+        }
+      }
+      else if (zStepper.getFeedMode() == AUTO_FEED_MODE && zStepper.getFeedAutoMode() == AUTO_FEED_MODE_SYNC)
+      {
+        if (!zStepper.getIsQuickSyncSpeed())
+        {
+          zStepper.setQuickSyncSpeed();
+          display.displaySyncSpeed(zStepper.getSyncSpeed());
         }
       }
     }
@@ -130,8 +138,16 @@ void GJoystick::checkCurrentJoystickPosition(unsigned long timeNow) {
           //zStepper.resetPosition();
           zStepper.backToNormalAutoSpeed();
           zStepper.setSpeed(zStepper.getAutoSpeed());
-          display.displayAutoFeedSpeed(zStepper.getAutoSpeed());
+          display.displayAutoSpeed(zStepper.getAutoSpeed());
           //interrupts();
+        }
+      }
+      else if (zStepper.getFeedMode() == AUTO_FEED_MODE && zStepper.getFeedAutoMode() == AUTO_FEED_MODE_SYNC)
+      {
+        if (zStepper.getIsQuickSyncSpeed())
+        {
+          zStepper.backToNormalSyncSpeed();
+          display.displaySyncSpeed(zStepper.getSyncSpeed());
         }
       }
     }

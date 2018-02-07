@@ -14,7 +14,7 @@
 #define MANUALLY_FEED_MODE 0
 #define AUTO_FEED_MODE 1
 #define AUTO_FEED_MODE_ASYNC 0
-#define AUTO_FEED_MODE_THREAD 1
+#define AUTO_FEED_MODE_SYNC 1
 #define DIRECTION_LEFT 1
 #define DIRECTION_RIGHT -1
 
@@ -43,9 +43,14 @@ class GStepper
     void setRightEndStopInSteps(long rightStop);
     long getLeftEndStopInSteps();
     float getLeftEndStopInMM();
+    boolean isLeftEndStopSet();
+    void disableLeftEndStop();
+    
     long getRightEndStopInSteps();
     float getRightEndStopInMM();
-    void setEndStopsToZero();
+    boolean isRightEndStopSet();
+    void disableRightEndStop();
+
     void setCurrentPositionToLeftEndStop();
     void setCurrentPositionToRightEndStop();
 
@@ -54,10 +59,13 @@ class GStepper
     void setQuickAutoSpeed();
     void backToNormalAutoSpeed();
     boolean getIsQuickAutoSpeed();
-    void increaseAutoSyncSpeed();
-    void decreaseAutoSyncSpeed();
+    void increaseSyncSpeed();
+    void decreaseSyncSpeed();
+    void setQuickSyncSpeed();
+    void backToNormalSyncSpeed();
+    boolean getIsQuickSyncSpeed();
     float getAutoSpeed();
-    float getAutoSyncSpeed();
+    float getSyncSpeed();
     byte getFeedMode();
     void setFeedMode(byte feedMode);
     byte getFeedAutoMode();
@@ -74,7 +82,7 @@ class GStepper
     volatile long _delta; //microseconds
   protected:
     void  makeStep();
-    boolean isEndStopsSet();
+ 
   private:
     volatile unsigned long _deltaTimeForNextStep;
 
@@ -90,20 +98,24 @@ class GStepper
     volatile float _speed;
 
     //for stops
+    volatile boolean _isLeftEndStopSet = false;
+    volatile boolean _isRightEndStopSet = false;
     volatile long _leftEndStop; // Steps
     volatile long _rightEndStop; // Steps
 
     // a variable for the selected auto feed sync speed: mm / one revolution of spindle: 0.08; 0.12; 0.16;
-    int _autoSyncSpeedCount = 0;
+    int _syncSpeedCount = 0;
+    int _oldSyncSpeedCount = 0;
+    boolean _isQuickSyncSpeed = false;
     //ATTENTION! The values are multiplayed by 100 for better precision and quick calclations
-    const float _zAutoFeedSyncSpeeds[NUM_AUTO_SPEEDS_SYNC] = {0.08, 0.12, 0.16, 0.30, 0.40, 0.50, 0.60, 0.70, 0.75, 0.80, 1.00, 1.25, 1.50, 1.75, 2.00, 2.50, 3.00};
+    const float _zSyncSpeeds[NUM_SYNC_SPEEDS] = {0.08, 0.12, 0.16, 0.30, 0.40, 0.50, 0.60, 0.70, 0.75, 0.80, 1.00, 1.25, 1.50, 1.75, 2.00, 2.50, 3.00};
 
     //a variable for the selected auto feed speed: mm / second
     int _autoSpeedCount = 0;
     int _oldAutoSpeedCount = 0;
     boolean _isQuickAutoSpeed = false;
     //ATTENTION! The values are multiplayed by 100 for better precision and quick calclations
-    const float _zAutoFeedSpeeds[NUM_AUTO_SPEEDS] = {0.05, 0.10, 2.00, 6.00};
+    const float _zAutoFeedSpeeds[NUM_AUTO_SPEEDS] = {0.50, 1.00, 2.00, 6.00};
 
     // a variable for mini lathe feed mode: 0 - manually feed; 1 - auto feed;
     volatile byte _feedMode;

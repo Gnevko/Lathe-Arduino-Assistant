@@ -176,7 +176,7 @@ void GDisplay::displayHandWheelFactor(float _handWheelFactor)
    ------>A0.08--------
    --------------------
 */
-void GDisplay::displayAutoFeedSpeed(float _autoSpeed)
+void GDisplay::displayAutoSpeed(float _autoSpeed)
 {
   _lcd->setCursor(8, 2);
   _lcd->print(F("A"));
@@ -189,7 +189,7 @@ void GDisplay::displayAutoFeedSpeed(float _autoSpeed)
    ------------>S0.08--
    --------------------
 */
-void GDisplay::displayAutoFeedSyncSpeed(float _autoSyncSpeed)
+void GDisplay::displaySyncSpeed(float _autoSyncSpeed)
 {
   _lcd->setCursor(15, 2);
   _lcd->print(F("S"));
@@ -202,11 +202,14 @@ void GDisplay::displayAutoFeedSyncSpeed(float _autoSyncSpeed)
    --------------------
    >L 123.00-----------
 */
-void GDisplay::displayLeftEndStop(float _leftStop)
+void GDisplay::displayLeftEndStop(float _leftStop, boolean isEnabled)
 {
   _lcd->setCursor(1, 3);
   _lcd->print(F("L"));
-  displayNumber(_leftStop, 2, 3);
+  if (isEnabled)
+    displayNumber(_leftStop, 2, 3);
+  else
+    _lcd->print(F("-------"));
 }
 
 /*
@@ -215,11 +218,14 @@ void GDisplay::displayLeftEndStop(float _leftStop)
    --------------------
    ---------->R-123.00-
 */
-void GDisplay::displayRightEndStop(float _rightStop)
+void GDisplay::displayRightEndStop(float _rightStop, boolean isEnabled)
 {
   _lcd->setCursor(12, 3);
   _lcd->print(F("R"));
-  displayNumber(_rightStop, 13, 3);
+  if (isEnabled)
+    displayNumber(_rightStop, 13, 3);
+  else
+    _lcd->print(F("-------"));
 }
 
 void GDisplay::displayNumber(float numberToDisplay, int cursorPos, int rowPos)

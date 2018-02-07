@@ -38,17 +38,17 @@ void GMenu::checkMenu(unsigned long timeNow, int menuCounter)
           zStepper.resetPosition();
           zHandWheelEncoder.write(zStepper.distanceInHandWheelUnits());
           interrupts();
-          display.displayAutoFeedSpeed(zStepper.getAutoSpeed());
+          display.displayAutoSpeed(zStepper.getAutoSpeed());
         }
         // auto sync feed mode
         else if (_menuMode == MENU_Z_AUTOFEEDSPEEDSYNC)
         {
-          zStepper.increaseAutoSyncSpeed();
+          zStepper.increaseSyncSpeed();
           noInterrupts();
           zStepper.resetPosition();
           zHandWheelEncoder.write(zStepper.distanceInHandWheelUnits());
           interrupts();
-          display.displayAutoFeedSyncSpeed(zStepper.getAutoSyncSpeed());
+          display.displaySyncSpeed(zStepper.getSyncSpeed());
         }
         // set left stop
         else if (_menuMode == MENU_Z_LEFT_STOP)
@@ -56,7 +56,7 @@ void GMenu::checkMenu(unsigned long timeNow, int menuCounter)
           noInterrupts();
           zStepper.setLeftEndStopInSteps(zStepper.getLeftEndStopInSteps() + (long) (0.1 / MM_PER_Z_STEP));
           interrupts();
-          display.displayLeftEndStop(zStepper.getLeftEndStopInMM());
+          display.displayLeftEndStop(zStepper.getLeftEndStopInMM(), zStepper.isLeftEndStopSet());
         }
         // set right stop
         else if (_menuMode == MENU_Z_RIGHT_STOP)
@@ -66,7 +66,7 @@ void GMenu::checkMenu(unsigned long timeNow, int menuCounter)
           if (zStepper.getRightEndStopInSteps() > 0)
             zStepper.setRightEndStopInSteps(0L);
           interrupts();
-          display.displayRightEndStop(zStepper.getRightEndStopInMM());
+          display.displayRightEndStop(zStepper.getRightEndStopInMM(), zStepper.isRightEndStopSet());
         }
       }
       else if (menuCounter < _menuOldCounter)
@@ -89,17 +89,17 @@ void GMenu::checkMenu(unsigned long timeNow, int menuCounter)
           zStepper.resetPosition();
           zHandWheelEncoder.write(zStepper.distanceInHandWheelUnits());
           interrupts();
-          display.displayAutoFeedSpeed(zStepper.getAutoSpeed());
+          display.displayAutoSpeed(zStepper.getAutoSpeed());
         }
         // auto sync feed mode
         else if (_menuMode == MENU_Z_AUTOFEEDSPEEDSYNC)
         {
-          zStepper.decreaseAutoSyncSpeed();
+          zStepper.decreaseSyncSpeed();
           noInterrupts();
           zStepper.resetPosition();
           zHandWheelEncoder.write(zStepper.distanceInHandWheelUnits());
           interrupts();
-          display.displayAutoFeedSyncSpeed(zStepper.getAutoSyncSpeed());
+          display.displaySyncSpeed(zStepper.getSyncSpeed());
         }
         // set left stop
         else if (_menuMode == MENU_Z_LEFT_STOP)
@@ -109,7 +109,7 @@ void GMenu::checkMenu(unsigned long timeNow, int menuCounter)
           if (zStepper.getLeftEndStopInSteps() < 0)
             zStepper.setLeftEndStopInSteps(0L);
           interrupts();
-          display.displayLeftEndStop(zStepper.getLeftEndStopInMM());
+          display.displayLeftEndStop(zStepper.getLeftEndStopInMM(), zStepper.isLeftEndStopSet());
         }
         // set right stop
         else if (_menuMode == MENU_Z_RIGHT_STOP)
@@ -117,7 +117,7 @@ void GMenu::checkMenu(unsigned long timeNow, int menuCounter)
           noInterrupts();
           zStepper.setRightEndStopInSteps(zStepper.getRightEndStopInSteps() - (long) (0.1 / MM_PER_Z_STEP));
           interrupts();
-          display.displayRightEndStop(zStepper.getRightEndStopInMM());
+          display.displayRightEndStop(zStepper.getRightEndStopInMM(), zStepper.isRightEndStopSet());
         }
       }
       display.displayMenuMark(_menuMode);
@@ -162,18 +162,27 @@ void GMenu::menuDoubleClick()
   {
     zStepper.setCurrentPositionToRightEndStop();
   }
-  else
-  {
-    zStepper.setEndStopsToZero();
-  }
-  display.displayRightEndStop(zStepper.getRightEndStopInMM());
-  display.displayLeftEndStop(zStepper.getLeftEndStopInMM());
+  display.displayLeftEndStop(zStepper.getLeftEndStopInMM(), zStepper.isLeftEndStopSet());
+  display.displayRightEndStop(zStepper.getRightEndStopInMM(), zStepper.isRightEndStopSet());
 }
 
 void GMenu::menuAttachDuringLongPress()
 {
-  zStepper.changeFeedAutoMode();
-  display.displaySelectMode(zStepper.getFeedAutoMode());
+  if (_menuMode == MENU_Z_LEFT_STOP)
+  {
+    zStepper.disableLeftEndStop();
+    display.displayLeftEndStop(zStepper.getLeftEndStopInMM(), zStepper.isLeftEndStopSet());
+  }
+  else if (_menuMode == MENU_Z_RIGHT_STOP)
+  {
+    zStepper.disableRightEndStop();
+    display.displayRightEndStop(zStepper.getRightEndStopInMM(), zStepper.isRightEndStopSet());
+  }
+  else
+  {
+    zStepper.changeFeedAutoMode();
+    display.displaySelectMode(zStepper.getFeedAutoMode());
+  }
   delay(1000);
 }
 

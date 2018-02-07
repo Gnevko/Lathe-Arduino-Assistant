@@ -26,7 +26,7 @@ GJoystick joystick;
 OneButton menuEncoderButton(MENU_BUTTON, true);
 
 void setup() {
-  Serial.begin(9600);
+  //Serial.begin(9600);
   // initialize the LCD
   lcd.begin();
   lcd.print(F("Init ..."));
@@ -57,10 +57,10 @@ void callbackSpindle()
   //Serial.println(zStepper.getCurrentPosition() - oldPosition);
   //oldPosition = zStepper.getCurrentPosition();
   
-  if (zStepper.getFeedMode() == AUTO_FEED_MODE && zStepper.getFeedAutoMode() == AUTO_FEED_MODE_THREAD && spindle.isReady() )
+  if (zStepper.getFeedMode() == AUTO_FEED_MODE && zStepper.getFeedAutoMode() == AUTO_FEED_MODE_SYNC && spindle.isReady() )
   {
-    //Serial.println(spindle.calculateMMPerSpindleRevolutionPerSecond(zStepper.getAutoSyncSpeed()));
-    zStepper.setSpeed(spindle.calculateMMPerSpindleRevolutionPerSecond(zStepper.getAutoSyncSpeed()));
+    //Serial.println(spindle.calculateMMPerSpindleRevolutionPerSecond(zStepper.getSyncSpeed()));
+    zStepper.setSpeed(spindle.calculateMMPerSpindleRevolutionPerSecond(zStepper.getSyncSpeed()));
   }
 }
 

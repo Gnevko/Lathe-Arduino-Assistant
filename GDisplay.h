@@ -20,10 +20,10 @@ class GDisplay
     void displaySelectMode (byte zFeedAutoMode);
     void displaySpindleSpeed(float _speedToShow);
     void displayHandWheelFactor(float _handWheelFactor);
-    void displayAutoFeedSpeed(float _autoSpeed);
-    void displayAutoFeedSyncSpeed(float _autoSyncSpeed);
-    void displayLeftEndStop(float _leftStop);
-    void displayRightEndStop(float _rightStop);
+    void displayAutoSpeed(float _autoSpeed);
+    void displaySyncSpeed(float _autoSyncSpeed);
+    void displayLeftEndStop(float _leftStop, boolean isEnabled);
+    void displayRightEndStop(float _rightStop, boolean isEnabled);
     void displayMenuMark(int menuMode);
 
   protected:

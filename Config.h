@@ -76,4 +76,5 @@
  *********************************************************/
 #define NUM_AUTO_SPEEDS 4
 #define QUICK_AUTO_SPEED_POSITION 3
-#define NUM_AUTO_SPEEDS_SYNC 17
+#define NUM_SYNC_SPEEDS 17
+#define QUICK_SYNC_SPEED_POSITION 14
