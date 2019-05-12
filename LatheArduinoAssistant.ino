@@ -26,10 +26,10 @@ GJoystick joystick;
 OneButton menuEncoderButton(MENU_BUTTON, true);
 
 void setup() {
-  //Serial.begin(9600);
+  Serial.begin(9600);
   // initialize the LCD
   lcd.begin();
-  lcd.print(F("Init ..."));
+  //lcd.print(F("Init ..."));
 
   joystick.initJoystick();
 
@@ -43,10 +43,6 @@ void setup() {
   menuEncoderButton.attachDoubleClick(callbackMenuDoubleClick);
   menuEncoderButton.attachLongPressStart(callbackMenuLongPressStart);
   menuEncoderButton.attachDuringLongPress(callbackMenuAttachDuringLongPress);
-
-  lcd.print(F("OK"));
-  delay(500);
-  lcd.clear();
 }
 
 //volatile long oldPosition = 0;

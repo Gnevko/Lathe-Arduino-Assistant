@@ -43,10 +43,14 @@
 /*********************************************************
    Joystick
  *********************************************************/
-#define JOYSTICK_Z_FORWARD_PIN  33
+#define JOYSTICK_TYPE 2 // 1 - with nunchuk support; 2 - only joystick
+#define JOYSTICK_BUTTON_A_PIN   51 // 
+#define JOYSTICK_BUTTON_B_PIN   47 //set to 0 
+
+#define JOYSTICK_Z_FORWARD_PIN  39
 #define JOYSTICK_Z_BACKWARD_PIN 35
-#define JOYSTICK_X_FORWARD_PIN  37
-#define JOYSTICK_X_BACKWARD_PIN 39
+#define JOYSTICK_X_FORWARD_PIN  51
+#define JOYSTICK_X_BACKWARD_PIN 53
 
 #define JOYSTICK_REACTION_TIME 100
 
@@ -76,5 +80,5 @@
  *********************************************************/
 #define NUM_AUTO_SPEEDS 4
 #define QUICK_AUTO_SPEED_POSITION 3
-#define NUM_SYNC_SPEEDS 17
-#define QUICK_SYNC_SPEED_POSITION 14
+#define NUM_SYNC_SPEEDS 18
+#define QUICK_SYNC_SPEED_POSITION 11

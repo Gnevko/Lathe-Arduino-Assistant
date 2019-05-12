@@ -108,7 +108,7 @@ class GStepper
     int _oldSyncSpeedCount = 0;
     boolean _isQuickSyncSpeed = false;
     //ATTENTION! The values are multiplayed by 100 for better precision and quick calclations
-    const float _zSyncSpeeds[NUM_SYNC_SPEEDS] = {0.08, 0.12, 0.16, 0.30, 0.40, 0.50, 0.60, 0.70, 0.75, 0.80, 1.00, 1.25, 1.50, 1.75, 2.00, 2.50, 3.00};
+    const float _zSyncSpeeds[NUM_SYNC_SPEEDS] = {0.04, 0.08, 0.12, 0.16, 0.30, 0.40, 0.50, 0.60, 0.70, 0.75, 0.80, 1.00, 1.25, 1.50, 1.75, 2.00, 2.50, 3.00};
 
     //a variable for the selected auto feed speed: mm / second
     int _autoSpeedCount = 0;

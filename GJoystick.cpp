@@ -1,7 +1,11 @@
 #include "GJoystick.h"
 
 #include <Wire.h>
+
+//https://github.com/timtro/wiinunchuck-h
+#if JOYSTICK_TYPE == 1
 #include <wiinunchuck.h>
+#endif
 
 GJoystick::GJoystick()
 {
@@ -16,10 +20,19 @@ void GJoystick::checkCurrentJoystickPosition(unsigned long timeNow) {
 
   if (timeNow - _lastJoysticChanges > JOYSTICK_REACTION_TIME)
   {
+    #if JOYSTICK_TYPE == 1
     int _nunchuk_cjoy_x = nunchuk_cjoy_x();
-    //Serial.println(_joystickPosition);
-    //Serial.println(_nunchuk_cjoy_x);
-    if (digitalReadFast(JOYSTICK_Z_FORWARD_PIN) == LOW || (_nunchuk_cjoy_x > 10 && _nunchuk_cjoy_x < 50))
+    #else
+    int _nunchuk_cjoy_x = 140;
+    #endif
+    
+    Serial.println(_joystickPosition);
+    //Serial.println(digitalReadFast(JOYSTICK_Z_FORWARD_PIN));
+#if JOYSTICK_TYPE == 1
+    if (digitalReadFast(JOYSTICK_Z_FORWARD_PIN) == 4 || (_nunchuk_cjoy_x > 10 && _nunchuk_cjoy_x < 50))
+#else
+    if (digitalReadFast(JOYSTICK_Z_FORWARD_PIN) == 4)
+#endif
     {
       if (_joystickPosition != 1)
       {
@@ -40,7 +53,11 @@ void GJoystick::checkCurrentJoystickPosition(unsigned long timeNow) {
         display.displayMode(zStepper.getFeedMode(), zStepper.getFeedAutoMode(), zStepper.getDirection());
       }
     }
-    else if (digitalReadFast(JOYSTICK_Z_BACKWARD_PIN) == LOW || _nunchuk_cjoy_x > 190)
+#if JOYSTICK_TYPE == 1
+    else if (digitalReadFast(JOYSTICK_Z_BACKWARD_PIN) == 4 || _nunchuk_cjoy_x > 190)
+#else
+    else if (digitalReadFast(JOYSTICK_Z_BACKWARD_PIN) == 4)
+#endif
     {
       if (_joystickPosition != 2)
       {
@@ -61,7 +78,7 @@ void GJoystick::checkCurrentJoystickPosition(unsigned long timeNow) {
         display.displayMode(zStepper.getFeedMode(), zStepper.getFeedAutoMode(), zStepper.getDirection());
       }
     }
-    else if (digitalReadFast(JOYSTICK_X_FORWARD_PIN) == LOW || nunchuk_cjoy_y() > 190)
+    /*else if (digitalReadFast(JOYSTICK_X_FORWARD_PIN) == 4 || nunchuk_cjoy_y() > 190)
     {
       if (_joystickPosition != 3)
       {
@@ -69,15 +86,19 @@ void GJoystick::checkCurrentJoystickPosition(unsigned long timeNow) {
         Serial.println("Joystick has X_FORWARD possition!");
       }
     }
-    else if (digitalReadFast(JOYSTICK_X_BACKWARD_PIN) == LOW || nunchuk_cjoy_y() < 50 )
+    else if (digitalReadFast(JOYSTICK_X_BACKWARD_PIN) == 4 || nunchuk_cjoy_y() < 50 )
     {
       if (_joystickPosition != 4)
       {
         _joystickPosition = 4; //X-Backward
         Serial.println("Joystick has X_BACKWARD possition!");
       }
-    }
-    else if (_nunchuk_cjoy_x > 100 && _nunchuk_cjoy_x < 150)
+    }*/
+#if JOYSTICK_TYPE == 1
+    else if ((digitalReadFast(JOYSTICK_Z_FORWARD_PIN) == LOW && digitalReadFast(JOYSTICK_Z_BACKWARD_PIN) == LOW) && (_nunchuk_cjoy_x > 100 && _nunchuk_cjoy_x < 150))
+#else
+    else if (digitalReadFast(JOYSTICK_Z_FORWARD_PIN) == LOW && digitalReadFast(JOYSTICK_Z_BACKWARD_PIN) == LOW)
+#endif
     {
       if (_joystickPosition != 0)
       {
@@ -98,12 +119,16 @@ void GJoystick::checkCurrentJoystickPosition(unsigned long timeNow) {
       }
     }
 
-    if (nunchuk_zbutton() == HIGH && nunchuk_cbutton() == HIGH)
+    /*if (nunchuk_zbutton() == HIGH && nunchuk_cbutton() == HIGH)
     {
 
-    }
+    }*/
 
-    if (nunchuk_zbutton() == HIGH)
+#if JOYSTICK_TYPE == 1
+    if (digitalReadFast(JOYSTICK_BUTTON_A_PIN) == 4 || nunchuk_zbutton() == HIGH)
+#else
+    if (digitalReadFast(JOYSTICK_BUTTON_A_PIN) == 4)
+#endif
     {
       if (zStepper.getFeedMode() == AUTO_FEED_MODE && zStepper.getFeedAutoMode() == AUTO_FEED_MODE_ASYNC)
       {
@@ -152,7 +177,11 @@ void GJoystick::checkCurrentJoystickPosition(unsigned long timeNow) {
       }
     }
 
-    if (nunchuk_cbutton() == HIGH)
+#if JOYSTICK_TYPE == 1
+    if (digitalReadFast(JOYSTICK_BUTTON_B_PIN) == 4 || nunchuk_cbutton() == HIGH)
+#else
+    if (digitalReadFast(JOYSTICK_BUTTON_B_PIN) == 4)
+#endif
     {
       noInterrupts();
       zStepper.setPositionToNull();
@@ -162,7 +191,9 @@ void GJoystick::checkCurrentJoystickPosition(unsigned long timeNow) {
 
     // Daten (6 Byte) vom Nunchuk Controller auslesen
     //noInterrupts();
+    #if JOYSTICK_TYPE == 1
     nunchuk_get_data();
+    #endif
     //interrupts();
     _lastJoysticChanges = timeNow;
   }
@@ -175,19 +206,22 @@ void GJoystick::initJoystick()
 {
   //Serial.println("initJoystick");
   // input
-  pinMode(JOYSTICK_Z_FORWARD_PIN, INPUT);
-  pinMode(JOYSTICK_Z_BACKWARD_PIN, INPUT);
-  pinMode(JOYSTICK_X_FORWARD_PIN, INPUT);
-  pinMode(JOYSTICK_X_BACKWARD_PIN, INPUT);
+  pinModeFast(JOYSTICK_Z_FORWARD_PIN, INPUT_PULLUP);
+  pinModeFast(JOYSTICK_Z_BACKWARD_PIN, INPUT_PULLUP);
+  pinModeFast(JOYSTICK_BUTTON_A_PIN, INPUT_PULLUP);
+  pinModeFast(JOYSTICK_BUTTON_B_PIN, INPUT_PULLUP);
+  //pinModeFast(JOYSTICK_X_FORWARD_PIN, INPUT_PULLUP);
+  //pinModeFast(JOYSTICK_X_BACKWARD_PIN, INPUT_PULLUP);
 
   //pull-up resistor
-  digitalWrite(JOYSTICK_Z_FORWARD_PIN, HIGH);
-  digitalWrite(JOYSTICK_Z_BACKWARD_PIN, HIGH);
-  digitalWrite(JOYSTICK_X_FORWARD_PIN, HIGH);
-  digitalWrite(JOYSTICK_X_BACKWARD_PIN, HIGH);
+  //digitalWrite(JOYSTICK_Z_FORWARD_PIN, HIGH);
+  //digitalWrite(JOYSTICK_Z_BACKWARD_PIN, HIGH);
+  //digitalWrite(JOYSTICK_X_FORWARD_PIN, HIGH);
+  //digitalWrite(JOYSTICK_X_BACKWARD_PIN, HIGH);
 
   delay(100);
 
+#if JOYSTICK_TYPE == 1
   nunchuk_init();
   delay(100);
   nunchuk_calibrate_joy();
@@ -195,6 +229,7 @@ void GJoystick::initJoystick()
   // Daten (6 Byte) vom Nunchuk Controller auslesen
   nunchuk_get_data();
   delay(200);
+#endif
 
   checkCurrentJoystickPosition(millis());
 
